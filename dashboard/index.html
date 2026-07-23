@@ -1,4 +1,4 @@
-﻿<!-- Blinkit Review Discovery Engine Dashboard v2.0.0 | AI Discovery Assistant -->
+<!-- Blinkit Review Discovery Engine Dashboard v2.0.0 | AI Discovery Assistant -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,19 +24,36 @@
     }
     html{scroll-behavior:smooth}
     body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.6;overflow-x:hidden}
-    .hero{position:relative;padding:56px 32px 48px;background:linear-gradient(135deg,#0d1829 0%,#111827 50%,#0d1422 100%);border-bottom:1px solid var(--border);overflow:hidden}
+
+    /* ── GLOBAL APP LAYOUT ── */
+    .app-layout{display:flex;min-height:100vh}
+    .global-nav{width:220px;flex-shrink:0;background:var(--surface3);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden}
+    .global-nav-header{padding:24px 20px 20px;border-bottom:1px solid var(--border)}
+    .global-nav-brand{font-size:13px;font-weight:800;color:var(--t1);letter-spacing:-.01em;line-height:1.2}
+    .global-nav-sub{font-size:10px;font-weight:500;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin-top:3px}
+    .global-nav-items{padding:16px 10px;display:flex;flex-direction:column;gap:2px;flex:1}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:9px;font-size:12px;font-weight:500;color:var(--t3);cursor:pointer;transition:all .18s;border:1px solid transparent;text-decoration:none;background:transparent;width:100%;text-align:left;font-family:'Inter',sans-serif}
+    .nav-item:hover{background:var(--id);color:var(--t2);border-color:rgba(99,102,241,.1)}
+    .nav-item.active{background:var(--ig);color:var(--t1);border-color:var(--border3)}
+    .nav-item-icon{font-size:14px;flex-shrink:0;line-height:1}
+    .global-nav-footer{padding:16px 20px;border-top:1px solid var(--border)}
+    .global-nav-footer-text{font-size:10px;color:var(--t3);line-height:1.5}
+    .app-content{flex:1;min-width:0;display:flex;flex-direction:column}
+    @media(max-width:900px){.global-nav{display:none}.app-content{width:100%}}
+
+    /* ── HERO ── */
+    .hero{position:relative;padding:64px 40px 56px;background:linear-gradient(135deg,#0d1829 0%,#111827 50%,#0d1422 100%);border-bottom:1px solid var(--border);overflow:hidden}
     .hero::before{content:'';position:absolute;top:-120px;left:-80px;width:600px;height:600px;background:radial-gradient(circle,rgba(99,102,241,0.12) 0%,transparent 70%);pointer-events:none}
     .hero::after{content:'';position:absolute;bottom:-80px;right:-40px;width:400px;height:400px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none}
-    .hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
-    .badge{display:inline-flex;align-items:center;gap:6px;background:var(--id);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:20px}
-    .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+    .hero-inner{max-width:1100px;margin:0 auto;position:relative;z-index:1}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-    .hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;line-height:1.2;letter-spacing:-.02em;background:linear-gradient(135deg,#f0f4ff 0%,#c7d2fe 60%,#a5b4fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
-    .hero-sub{font-size:15px;color:var(--t2);max-width:620px;line-height:1.7}
-    .hero-meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:20px;font-size:12px;color:var(--t3)}
-    main{max-width:1200px;margin:0 auto;padding:40px 32px 80px}
-    section{margin-bottom:56px}
-    .section-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+    .hero h1{font-size:clamp(28px,3.5vw,42px);font-weight:800;line-height:1.15;letter-spacing:-.03em;background:linear-gradient(135deg,#f0f4ff 0%,#c7d2fe 60%,#a5b4fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:16px}
+    .hero-sub{font-size:15px;color:var(--t2);max-width:580px;line-height:1.75;margin-bottom:0}
+    .hero-meta{margin-top:28px;display:flex;flex-wrap:wrap;gap:8px}
+    .hero-meta-chip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:99px;padding:4px 12px;font-size:11px;color:var(--t3)}
+    main{max-width:1100px;margin:0 auto;padding:48px 40px 100px}
+    section{margin-bottom:72px}
+    .section-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--t3);margin-bottom:24px;display:flex;align-items:center;gap:10px}
     .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
     .ai-workspace{display:grid;grid-template-columns:300px 1fr;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;background:var(--surface3);min-height:600px}
     @media(max-width:900px){.ai-workspace{grid-template-columns:1fr}}
@@ -179,8 +196,8 @@
     .pipe-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:5px}.pipe-desc{font-size:11px;color:var(--t3);line-height:1.5}
     .pipe-tag{display:inline-block;margin-top:10px;font-size:10px;padding:2px 8px;border-radius:99px;background:var(--id);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
     @media(max-width:720px){.pipeline{flex-direction:column}.pipe-arrow{transform:rotate(90deg);width:auto;height:28px}.pipe-step{min-width:100%}}
-    .footer-bar{border-top:1px solid var(--border);padding:32px;max-width:1200px;margin:0 auto}
-    .footer-links{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+    .footer-bar{border-top:1px solid var(--border);padding:36px 40px;max-width:1100px;margin:0 auto}
+    .footer-links{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:18px}
     .footer-link{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none;transition:all .2s;border:1px solid}
     .footer-link.primary{background:var(--indigo);border-color:var(--indigo);color:#fff}.footer-link.primary:hover{background:#4f46e5;box-shadow:0 0 20px var(--ig)}
     .footer-link.secondary{background:transparent;border-color:var(--border2);color:var(--t2)}.footer-link.secondary:hover{border-color:var(--indigo);color:#a5b4fc}
@@ -188,13 +205,38 @@
   </style>
 </head>
 <body>
+<div class="app-layout">
+
+<!-- GLOBAL NAV SIDEBAR -->
+<nav class="global-nav" aria-label="Primary navigation">
+  <div class="global-nav-header">
+    <div class="global-nav-brand">Blinkit Discovery AI</div>
+    <div class="global-nav-sub">Research Intelligence</div>
+  </div>
+  <div class="global-nav-items">
+    <button class="nav-item active" onclick="setNavActive(this)"><span class="nav-item-icon">&#127968;</span>Dashboard</button>
+    <button class="nav-item" onclick="setNavActive(this);document.getElementById('ai-assistant').scrollIntoView({behavior:'smooth'})"><span class="nav-item-icon">&#129302;</span>AI Research</button>
+    <button class="nav-item" onclick="setNavActive(this);document.getElementById('insights').scrollIntoView({behavior:'smooth'})"><span class="nav-item-icon">&#128202;</span>Customer Signals</button>
+    <button class="nav-item" onclick="setNavActive(this);document.getElementById('trust').scrollIntoView({behavior:'smooth'})"><span class="nav-item-icon">&#127919;</span>Product Opportunities</button>
+    <button class="nav-item" onclick="setNavActive(this);document.getElementById('pipeline').scrollIntoView({behavior:'smooth'})"><span class="nav-item-icon">&#128218;</span>Insights Library</button>
+  </div>
+  <div class="global-nav-footer">
+    <div class="global-nav-footer-text">Blinkit AI Discovery Engine<br>Internal Research Workspace</div>
+  </div>
+</nav>
+
+<!-- MAIN CONTENT -->
+<div class="app-content">
 <header class="hero">
   <div class="hero-inner">
-    <div class="badge"><span class="badge-dot"></span>AI Product Discovery Platform &middot; Step 1 Complete</div>
     <h1>Blinkit AI Discovery Engine</h1>
     <p class="hero-sub">An AI-powered dual-source research platform that mines 10,000 Play Store reviews and 134 community discussions to surface evidence-backed product insights for Blinkit PMs.</p>
     <div class="hero-meta">
-      <span>&#128197; Generated: July 2026</span><span>&#129504; LLM: Groq / LLaMA 3</span><span>&#128300; Embeddings: all-MiniLM-L6-v2</span><span>&#128202; Clustering: UMAP + HDBSCAN</span>
+      <span class="hero-meta-chip">&#128202; 10,000 Reviews Analyzed</span>
+      <span class="hero-meta-chip">&#128172; 134 Community Discussions</span>
+      <span class="hero-meta-chip">&#129504; Groq / LLaMA 3</span>
+      <span class="hero-meta-chip">&#128300; all-MiniLM-L6-v2</span>
+      <span class="hero-meta-chip">&#128201; UMAP + HDBSCAN</span>
     </div>
   </div>
 </header>
@@ -204,8 +246,8 @@
   <div class="ai-workspace">
     <aside class="ai-sidebar">
       <div class="ai-sidebar-header">
-        <div class="ai-sidebar-title">&#128269; Discovery Questions</div>
-        <div class="ai-sidebar-sub">Ask the AI Discovery Engine about customer behaviour.</div>
+        <div class="ai-sidebar-title">&#129302; Blinkit Discovery AI</div>
+        <div class="ai-sidebar-sub">Research Intelligence &middot; Select a question below</div>
       </div>
       <div class="ai-questions-list" id="questionsList">
         <button class="q-card" data-q="1" onclick="selectQuestion(1)"><span class="q-num">Q1</span><span class="q-text">Why do users repeatedly buy from the same categories?</span></button>
@@ -432,9 +474,15 @@ function animateCount(id,target,dur){
 }
 var obs=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){animateCount('c-raw',10000,1200);animateCount('c-clean',4281,1400);animateCount('c-disc',125,1000);animateCount('c-comm',134,1000);animateCount('c-clust',5,800);obs.disconnect();}});},{threshold:0.2});
 obs.observe(document.getElementById('stats'));
+function setNavActive(el){
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
+  el.classList.add('active');
+}
 var ctx=document.getElementById('painChart').getContext('2d');
 var opC='rgba(99,102,241,0.7)',opB='rgba(99,102,241,1)',dsC='rgba(16,185,129,0.7)',dsB='rgba(16,185,129,1)';
 new Chart(ctx,{type:'bar',data:{labels:['Poor Service\n& Quality','Delivery\nDelays','High\nDelivery Charges','Refund &\nOperational','Limited\nAssortment','Trust &\nAuthenticity','Search\nFriction','Price\nPerception','New Category\nInterest'],datasets:[{label:'Review Count',data:[980,760,620,540,58,32,20,15,10],backgroundColor:[opC,opC,opC,opC,dsC,dsC,dsC,dsC,dsC],borderColor:[opB,opB,opB,opB,dsB,dsB,dsB,dsB,dsB],borderWidth:1.5,borderRadius:6,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{backgroundColor:'#1a2235',borderColor:'#2a3a55',borderWidth:1,titleColor:'#f0f4ff',bodyColor:'#94a3b8',padding:12,callbacks:{title:function(i){return i[0].label.replace(/\n/g,' ')},label:function(i){return ' '+(i.raw).toLocaleString()+' reviews  \u00b7  '+(i.dataIndex>=4?'Discovery':'Operational')}}}},scales:{x:{ticks:{color:'#64748b',font:{size:11,family:'Inter'},maxRotation:0},grid:{color:'rgba(31,45,68,0.8)'}},y:{ticks:{color:'#64748b',font:{size:11,family:'Inter'},callback:function(v){return v>=1000?(v/1000).toFixed(1)+'k':v}},grid:{color:'rgba(31,45,68,0.8)'},border:{dash:[3,3]}}},animation:{duration:900,easing:'easeOutQuart'}}});
 </script>
+</div><!-- /app-content -->
+</div><!-- /app-layout -->
 </body>
 </html>
