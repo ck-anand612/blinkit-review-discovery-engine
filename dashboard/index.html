@@ -1,0 +1,450 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blinkit Review Discovery Engine &mdash; Analytics Dashboard</title>
+  <meta name="description" content="Analytics dashboard presenting findings from the Blinkit Review Discovery Engine." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0b0f1a;--surface:#111827;--surface2:#1a2235;
+      --border:#1f2d44;--border2:#2a3a55;
+      --t1:#f0f4ff;--t2:#94a3b8;--t3:#64748b;
+      --indigo:#6366f1;--ig:rgba(99,102,241,0.18);--id:rgba(99,102,241,0.08);
+      --green:#10b981;--gg:rgba(16,185,129,0.15);
+      --amber:#f59e0b;--ag:rgba(245,158,11,0.15);
+      --red:#f43f5e;--rg:rgba(244,63,94,0.15);
+      --cyan:#06b6d4;--cg:rgba(6,182,212,0.15);
+      --r:14px;--rs:8px;
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;line-height:1.6;overflow-x:hidden}
+
+    /* HERO */
+    .hero{position:relative;padding:56px 32px 48px;background:linear-gradient(135deg,#0d1829 0%,#111827 50%,#0d1422 100%);border-bottom:1px solid var(--border);overflow:hidden}
+    .hero::before{content:'';position:absolute;top:-120px;left:-80px;width:600px;height:600px;background:radial-gradient(circle,rgba(99,102,241,0.12) 0%,transparent 70%);pointer-events:none}
+    .hero::after{content:'';position:absolute;bottom:-80px;right:-40px;width:400px;height:400px;background:radial-gradient(circle,rgba(16,185,129,0.08) 0%,transparent 70%);pointer-events:none}
+    .hero-inner{max-width:1200px;margin:0 auto;position:relative;z-index:1}
+    .badge{display:inline-flex;align-items:center;gap:6px;background:var(--id);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;margin-bottom:20px}
+    .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .hero h1{font-size:clamp(26px,4vw,40px);font-weight:800;line-height:1.2;letter-spacing:-.02em;background:linear-gradient(135deg,#f0f4ff 0%,#c7d2fe 60%,#a5b4fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:12px}
+    .hero-sub{font-size:15px;color:var(--t2);max-width:620px;line-height:1.7}
+    .hero-meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:20px;font-size:12px;color:var(--t3)}
+
+    /* LAYOUT */
+    main{max-width:1200px;margin:0 auto;padding:40px 32px 80px}
+    section{margin-bottom:56px}
+    .section-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t3);margin-bottom:20px;display:flex;align-items:center;gap:8px}
+    .section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+    /* STAT CARDS */
+    .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px}
+    .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:24px;position:relative;overflow:hidden;transition:transform .2s,border-color .2s,box-shadow .2s;cursor:default}
+    .stat-card:hover{transform:translateY(-3px);border-color:var(--border2);box-shadow:0 8px 32px rgba(0,0,0,.3)}
+    .stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+    .stat-card.ind::before{background:linear-gradient(90deg,var(--indigo),transparent)}
+    .stat-card.grn::before{background:linear-gradient(90deg,var(--green),transparent)}
+    .stat-card.amb::before{background:linear-gradient(90deg,var(--amber),transparent)}
+    .stat-card.cyn::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+    .stat-card.red::before{background:linear-gradient(90deg,var(--red),transparent)}
+    .stat-icon{width:36px;height:36px;border-radius:var(--rs);display:flex;align-items:center;justify-content:center;font-size:17px;margin-bottom:16px}
+    .stat-card.ind .stat-icon{background:var(--id)}
+    .stat-card.grn .stat-icon{background:var(--gg)}
+    .stat-card.amb .stat-icon{background:var(--ag)}
+    .stat-card.cyn .stat-icon{background:var(--cg)}
+    .stat-card.red .stat-icon{background:var(--rg)}
+    .stat-value{font-size:36px;font-weight:800;letter-spacing:-.03em;line-height:1;margin-bottom:6px}
+    .stat-card.ind .stat-value{color:#a5b4fc}
+    .stat-card.grn .stat-value{color:#6ee7b7}
+    .stat-card.amb .stat-value{color:#fcd34d}
+    .stat-card.cyn .stat-value{color:#67e8f9}
+    .stat-card.red .stat-value{color:#fda4af}
+    .stat-label{font-size:13px;color:var(--t2);font-weight:500}
+    .stat-sub{font-size:11px;color:var(--t3);margin-top:4px}
+
+    /* INSIGHT CARDS */
+    .insight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .insight-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:22px;transition:transform .2s,border-color .2s}
+    .insight-card:hover{transform:translateY(-2px);border-color:var(--border2)}
+    .insight-q{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--indigo);margin-bottom:10px}
+    .insight-finding{font-size:14px;color:var(--t1);line-height:1.65;margin-bottom:12px}
+    .insight-evidence{font-size:12px;color:var(--t3);background:var(--surface2);border-left:2px solid var(--border2);padding:8px 12px;border-radius:0 var(--rs) var(--rs) 0;font-style:italic}
+    .insight-badge{display:inline-block;font-size:10px;font-weight:600;padding:2px 8px;border-radius:99px;margin-top:10px;background:var(--id);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
+
+    /* TRUST SECTION */
+    .trust-section{background:linear-gradient(135deg,#0d1829 0%,#131f30 100%);border:1px solid rgba(244,63,94,.3);border-radius:var(--r);padding:32px;position:relative;overflow:hidden}
+    .trust-section::before{content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;background:radial-gradient(circle,rgba(244,63,94,.1) 0%,transparent 70%);pointer-events:none}
+    .trust-header{display:flex;align-items:flex-start;gap:16px;margin-bottom:24px}
+    .trust-icon-wrap{width:48px;height:48px;border-radius:12px;background:var(--rg);border:1px solid rgba(244,63,94,.25);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .trust-title{font-size:20px;font-weight:700;color:#fda4af;margin-bottom:4px}
+    .trust-subtitle{font-size:13px;color:var(--t3)}
+    .trust-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+    @media(max-width:640px){.trust-cols{grid-template-columns:1fr}}
+    .trust-col h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px}
+    .trust-col.pain h4{color:var(--red)}
+    .trust-col.opp h4{color:var(--green)}
+    .trust-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+    .trust-list li{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--t2);line-height:1.5}
+    .trust-list li::before{content:'';width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:6px}
+    .trust-col.pain .trust-list li::before{background:var(--red);box-shadow:0 0 6px var(--red)}
+    .trust-col.opp .trust-list li::before{background:var(--green);box-shadow:0 0 6px var(--green)}
+    .quotes-strip{margin-top:24px;padding-top:24px;border-top:1px solid rgba(244,63,94,.15)}
+    .quotes-strip h4{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--t3);margin-bottom:14px}
+    .quotes-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+    blockquote{background:rgba(244,63,94,.06);border:1px solid rgba(244,63,94,.15);border-radius:var(--rs);padding:14px 16px;font-size:12px;font-style:italic;color:var(--t2);line-height:1.6}
+    blockquote cite{display:block;margin-top:8px;font-size:10px;font-style:normal;color:var(--t3)}
+
+    /* CHART */
+    .chart-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px}
+    .chart-header{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:24px}
+    .chart-title{font-size:16px;font-weight:600;color:var(--t1)}
+    .chart-desc{font-size:12px;color:var(--t3);margin-top:3px}
+    .chart-legend{display:flex;gap:16px;flex-shrink:0}
+    .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--t2)}
+    .legend-dot{width:8px;height:8px;border-radius:50%}
+    .chart-canvas-wrap{position:relative;height:300px}
+
+    /* PIPELINE */
+    .pipeline{display:flex;align-items:stretch;flex-wrap:wrap;gap:0}
+    .pipe-step{flex:1;min-width:130px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 16px;text-align:center;transition:transform .2s,border-color .2s,box-shadow .2s;cursor:default}
+    .pipe-step:hover{transform:translateY(-3px);border-color:var(--indigo);box-shadow:0 0 20px var(--ig);z-index:1}
+    .pipe-arrow{width:32px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--t3);font-size:18px}
+    .pipe-icon{font-size:26px;margin-bottom:10px;line-height:1}
+    .pipe-num{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--indigo);margin-bottom:4px}
+    .pipe-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:5px}
+    .pipe-desc{font-size:11px;color:var(--t3);line-height:1.5}
+    .pipe-tag{display:inline-block;margin-top:10px;font-size:10px;padding:2px 8px;border-radius:99px;background:var(--id);color:#a5b4fc;border:1px solid rgba(99,102,241,.2)}
+    @media(max-width:720px){.pipeline{flex-direction:column}.pipe-arrow{transform:rotate(90deg);width:auto;height:28px}.pipe-step{min-width:100%}}
+
+    /* FOOTER */
+    .footer-bar{border-top:1px solid var(--border);padding:32px;max-width:1200px;margin:0 auto}
+    .footer-links{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:16px}
+    .footer-link{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;text-decoration:none;transition:all .2s;border:1px solid}
+    .footer-link.primary{background:var(--indigo);border-color:var(--indigo);color:#fff}
+    .footer-link.primary:hover{background:#4f46e5;box-shadow:0 0 20px var(--ig)}
+    .footer-link.secondary{background:transparent;border-color:var(--border2);color:var(--t2)}
+    .footer-link.secondary:hover{border-color:var(--indigo);color:#a5b4fc}
+    .footer-copy{font-size:12px;color:var(--t3)}
+    .footer-copy a{color:var(--t3);text-decoration:underline;text-underline-offset:3px}
+  </style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="badge"><span class="badge-dot"></span>Product Discovery Research &middot; Step 1 Complete</div>
+    <h1>Blinkit Review Discovery Engine</h1>
+    <p class="hero-sub">A dual-source AI pipeline that mines 10,000 Play Store reviews and 134 community discussions to surface early product hypotheses about category-discovery friction on Blinkit.</p>
+    <div class="hero-meta">
+      <span>&#128197; Generated: July 2026</span>
+      <span>&#129504; LLM: Groq / LLaMA 3</span>
+      <span>&#128300; Embeddings: all-MiniLM-L6-v2</span>
+      <span>&#128202; Clustering: UMAP + HDBSCAN</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section id="stats" aria-label="Key dataset statistics">
+    <p class="section-label">Dataset Overview</p>
+    <div class="stat-grid">
+      <div class="stat-card ind">
+        <div class="stat-icon">&#128229;</div>
+        <div class="stat-value" id="c-raw">0</div>
+        <div class="stat-label">Raw Play Store Reviews</div>
+        <div class="stat-sub">Ingested via google-play-scraper</div>
+      </div>
+      <div class="stat-card grn">
+        <div class="stat-icon">&#9989;</div>
+        <div class="stat-value" id="c-clean">0</div>
+        <div class="stat-label">Cleaned Reviews</div>
+        <div class="stat-sub">After dedup + noise filtering</div>
+      </div>
+      <div class="stat-card amb">
+        <div class="stat-icon">&#128269;</div>
+        <div class="stat-value" id="c-disc">0</div>
+        <div class="stat-label">Discovery Reviews</div>
+        <div class="stat-sub">~2.92% of cleaned corpus</div>
+      </div>
+      <div class="stat-card cyn">
+        <div class="stat-icon">&#128172;</div>
+        <div class="stat-value" id="c-comm">0</div>
+        <div class="stat-label">Community Discussions</div>
+        <div class="stat-sub">Reddit &amp; forum threads</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-icon">&#129513;</div>
+        <div class="stat-value" id="c-clust">0</div>
+        <div class="stat-label">Discovery Clusters</div>
+        <div class="stat-sub">Validated by LLM Senior PM filter</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="insights" aria-label="Top discovery insights">
+    <p class="section-label">Top Discovery Insights</p>
+    <div class="insight-grid">
+      <div class="insight-card">
+        <div class="insight-q">Q1 &middot; Why Users Stick to Familiar Categories</div>
+        <div class="insight-finding">Users default to familiar categories because they value convenience, fast delivery, and having everything in one place &mdash; not because they lack interest in new ones.</div>
+        <div class="insight-evidence">"good but doesn't have varieties of Mother Dairy products"</div>
+        <span class="insight-badge">15 reviews &middot; Habit Loop</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-q">Q2 &middot; Main Barriers to Category Exploration</div>
+        <div class="insight-finding">High prices vs. local stores, frequent stockouts, and poor search functionality are the primary blockers preventing users from exploring new categories.</div>
+        <div class="insight-evidence">"The product variety is also limited in my area, so I can't find the brands I'm looking for."</div>
+        <span class="insight-badge">12 reviews &middot; Friction</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-q">Q3 &middot; How Discovery Happens</div>
+        <div class="insight-finding">Product discovery happens through organic browsing of the app interface rather than targeted search &mdash; users stumble upon categories, not seek them actively.</div>
+        <div class="insight-evidence">"please have some more variety"</div>
+        <span class="insight-badge">15 reviews &middot; Discovery Mode</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-q">Q5 &middot; What Users Need Before Trying New Categories</div>
+        <div class="insight-finding">Before trying a new category, users need competitive pricing, reassurance about product quality, and a verified wide range of options in their area.</div>
+        <div class="insight-evidence">"you should make beauty products available"</div>
+        <span class="insight-badge">7 reviews &middot; Trust Signal</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-q">Q7 &middot; Most Willing Explorers</div>
+        <div class="insight-finding">Users who already prioritize convenience, fast delivery, and variety are most willing to experiment with new categories &mdash; primed for cross-category growth.</div>
+        <div class="insight-evidence">"wide range and nice price"</div>
+        <span class="insight-badge">8 reviews &middot; Growth Segment</span>
+      </div>
+      <div class="insight-card">
+        <div class="insight-q">Q8 &middot; Most Significant Unmet Needs</div>
+        <div class="insight-finding">Clearest unmet needs: a broader product catalog, improved search optimized for open-ended discovery, and more competitive pricing on non-grocery items.</div>
+        <div class="insight-evidence">"it is good but, it doesn't have varieties..."</div>
+        <span class="insight-badge">10 reviews &middot; Product Gap</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="trust" aria-label="Trust and authenticity findings">
+    <p class="section-label">Strongest Signal &mdash; Community Evidence</p>
+    <div class="trust-section">
+      <div class="trust-header">
+        <div class="trust-icon-wrap">&#128737;&#65039;</div>
+        <div>
+          <div class="trust-title">Trust &amp; Authenticity Barriers to Category Exploration</div>
+          <div class="trust-subtitle">Extracted from 134 curated Reddit &amp; forum discussions &middot; Secondary evidence corroborating Play Store discovery clusters</div>
+        </div>
+      </div>
+      <div class="trust-cols">
+        <div class="trust-col pain">
+          <h4>Pain Points</h4>
+          <ul class="trust-list">
+            <li>Receiving fake, damaged, or low-quality products</li>
+            <li>Difficulty with returns and refund processes</li>
+            <li>Overall lack of trust for non-grocery purchases</li>
+            <li>Used/unsealed items delivered as new</li>
+            <li>"Free sample, Not for Sale" items sold at full price</li>
+          </ul>
+        </div>
+        <div class="trust-col opp">
+          <h4>PM Opportunities</h4>
+          <ul class="trust-list">
+            <li>Implement robust quality control &amp; authenticity verification</li>
+            <li>Streamline returns &amp; refunds to lower exploration risk</li>
+            <li>Add verified seller badges and product review layers</li>
+            <li>Surface detailed product information before purchase</li>
+            <li>Consider authenticity guarantees for beauty/electronics</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quotes-strip">
+        <h4>Verbatim Community Quotes</h4>
+        <div class="quotes-grid">
+          <blockquote>"I did receive fake Cetaphil face wash from Blinkit, so I don't trust these quick commerce."<cite>&mdash; r/india</cite></blockquote>
+          <blockquote>"I brought a calculator from them &mdash; it was fake and a copied one, not original."<cite>&mdash; r/delhi</cite></blockquote>
+          <blockquote>"Received a dirty, used, unsealed product that's expiring next month."<cite>&mdash; r/IndianBeautyDeals</cite></blockquote>
+          <blockquote>"Almost all of them had this printed loud and proud: 'Free sample. Not for sale.'"<cite>&mdash; r/india</cite></blockquote>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="chart" aria-label="Pain point frequency by type">
+    <p class="section-label">Pain Point Frequency Analysis</p>
+    <div class="chart-wrap">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Cluster Theme Frequency &mdash; Operational vs. Discovery Split</div>
+          <div class="chart-desc">Based on keyword-filtered review subset (N=4,281 cleaned) + community discussion analysis</div>
+        </div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:#6366f1"></div>Operational</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#10b981"></div>Discovery</div>
+        </div>
+      </div>
+      <div class="chart-canvas-wrap">
+        <canvas id="painChart" aria-label="Bar chart of pain point clusters by review count"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section id="pipeline" aria-label="Pipeline workflow stages">
+    <p class="section-label">Pipeline Architecture</p>
+    <div class="pipeline">
+      <div class="pipe-step">
+        <div class="pipe-icon">&#128229;</div>
+        <div class="pipe-num">Step 01</div>
+        <div class="pipe-name">Fetch</div>
+        <div class="pipe-desc">google-play-scraper pulls 10,000 raw reviews. Community CSVs ingested manually.</div>
+        <span class="pipe-tag">ingest/</span>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-step">
+        <div class="pipe-icon">&#129529;</div>
+        <div class="pipe-num">Step 02</div>
+        <div class="pipe-name">Clean</div>
+        <div class="pipe-desc">Dedup, noise filter, min-length rules. 10,000 &#8594; 4,281 high-quality reviews.</div>
+        <span class="pipe-tag">clean.py</span>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-step">
+        <div class="pipe-icon">&#127919;</div>
+        <div class="pipe-num">Step 03</div>
+        <div class="pipe-name">Filter</div>
+        <div class="pipe-desc">Regex keyword filter isolates 125 discovery-relevant reviews from 4,281 cleaned.</div>
+        <span class="pipe-tag">filter_discovery.py</span>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-step">
+        <div class="pipe-icon">&#129504;</div>
+        <div class="pipe-num">Step 04</div>
+        <div class="pipe-name">Cluster</div>
+        <div class="pipe-desc">MiniLM embeddings &#8594; UMAP reduction &#8594; HDBSCAN clustering into 5 groups.</div>
+        <span class="pipe-tag">analysis/</span>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-step">
+        <div class="pipe-icon">&#129309;</div>
+        <div class="pipe-num">Step 05</div>
+        <div class="pipe-name">LLM Summarize</div>
+        <div class="pipe-desc">Groq LLaMA 3 acts as Senior PM &mdash; classifies clusters as Discovery or Operational, extracts structured findings.</div>
+        <span class="pipe-tag">summarize.py</span>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-step">
+        <div class="pipe-icon">&#9989;</div>
+        <div class="pipe-num">Step 06</div>
+        <div class="pipe-name">Validate</div>
+        <div class="pipe-desc">Every LLM-extracted quote validated against raw text programmatically. Zero hallucinations tolerated.</div>
+        <span class="pipe-tag">run_pipeline.py</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="hypotheses" aria-label="Key product hypotheses">
+    <p class="section-label">Key Hypotheses for Interview Validation (Part 2)</p>
+    <div class="insight-grid">
+      <div class="insight-card" style="border-color:rgba(244,63,94,.25)">
+        <div class="insight-q" style="color:#f43f5e">Hypothesis 1 &middot; Trust &amp; Authenticity</div>
+        <div class="insight-finding">Users hesitate to buy high-value or personal care items because they doubt product authenticity and find returns harder than on Amazon/Flipkart.</div>
+        <span class="insight-badge" style="background:var(--rg);color:#fda4af;border-color:rgba(244,63,94,.2)">&#128308; Highest Impact</span>
+      </div>
+      <div class="insight-card" style="border-color:rgba(99,102,241,.25)">
+        <div class="insight-q" style="color:var(--indigo)">Hypothesis 2 &middot; Assortment &amp; Search</div>
+        <div class="insight-finding">Users want to explore new categories but abandon the effort because of limited brand variety and a search UX optimized for known grocery items &mdash; not open discovery.</div>
+        <span class="insight-badge">&#128995; High Impact</span>
+      </div>
+      <div class="insight-card" style="border-color:rgba(245,158,11,.25)">
+        <div class="insight-q" style="color:var(--amber)">Hypothesis 3 &middot; Price Perception</div>
+        <div class="insight-finding">Users view Blinkit as premium-priced for non-grocery items and need clear competitive pricing or discounts to break the habit of relying on local stores.</div>
+        <span class="insight-badge" style="background:var(--ag);color:#fcd34d;border-color:rgba(245,158,11,.2)">&#128993; Medium Impact</span>
+      </div>
+      <div class="insight-card" style="border-color:rgba(16,185,129,.25)">
+        <div class="insight-q" style="color:var(--green)">Hypothesis 4 &middot; Quality Assurance</div>
+        <div class="insight-finding">Lack of detailed product information and user reviews creates a high entry barrier for unfamiliar categories where evaluating quality is essential before buying.</div>
+        <span class="insight-badge" style="background:var(--gg);color:#6ee7b7;border-color:rgba(16,185,129,.2)">&#128994; Medium Impact</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer-bar">
+  <div class="footer-links">
+    <a id="link-report" class="footer-link primary" href="https://github.com/ck-anand612/blinkit-review-discovery-engine/blob/master/data/reports/blinkit_discovery_report.md" target="_blank" rel="noopener">&#128196; Full Research Report</a>
+    <a id="link-repo" class="footer-link secondary" href="https://github.com/ck-anand612/blinkit-review-discovery-engine" target="_blank" rel="noopener">&#9881;&#65039; GitHub Repository</a>
+    <a id="link-docs" class="footer-link secondary" href="https://github.com/ck-anand612/blinkit-review-discovery-engine/tree/master/docs" target="_blank" rel="noopener">&#128218; Docs &amp; Architecture</a>
+  </div>
+  <div class="footer-copy">
+    Blinkit Review Discovery Engine &mdash; GUAD Project, Step 1 &mdash; Built with Python &middot; Groq LLaMA 3 &middot; UMAP &middot; HDBSCAN &middot;
+    <a href="https://github.com/ck-anand612/blinkit-review-discovery-engine" target="_blank" rel="noopener">Open Source on GitHub</a>
+  </div>
+</footer>
+
+<script>
+function animateCount(id,target,duration){
+  var el=document.getElementById(id);if(!el)return;
+  var start=performance.now();
+  function step(now){
+    var p=Math.min((now-start)/duration,1);
+    var ease=1-Math.pow(1-p,3);
+    el.textContent=Math.floor(ease*target).toLocaleString();
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+var obs=new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){
+      animateCount('c-raw',10000,1200);
+      animateCount('c-clean',4281,1400);
+      animateCount('c-disc',125,1000);
+      animateCount('c-comm',134,1000);
+      animateCount('c-clust',5,800);
+      obs.disconnect();
+    }
+  });
+},{threshold:0.2});
+obs.observe(document.getElementById('stats'));
+
+var ctx=document.getElementById('painChart').getContext('2d');
+var opC='rgba(99,102,241,0.7)',opB='rgba(99,102,241,1)';
+var dsC='rgba(16,185,129,0.7)',dsB='rgba(16,185,129,1)';
+new Chart(ctx,{
+  type:'bar',
+  data:{
+    labels:['Poor Service\n& Quality','Delivery\nDelays','High\nDelivery Charges','Refund &\nOperational','Limited\nAssortment','Trust &\nAuthenticity','Search\nFriction','Price\nPerception','New Category\nInterest'],
+    datasets:[{
+      label:'Review Count',
+      data:[980,760,620,540,58,32,20,15,10],
+      backgroundColor:[opC,opC,opC,opC,dsC,dsC,dsC,dsC,dsC],
+      borderColor:[opB,opB,opB,opB,dsB,dsB,dsB,dsB,dsB],
+      borderWidth:1.5,borderRadius:6,borderSkipped:false
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{
+        backgroundColor:'#1a2235',borderColor:'#2a3a55',borderWidth:1,
+        titleColor:'#f0f4ff',bodyColor:'#94a3b8',padding:12,
+        callbacks:{
+          title:function(i){return i[0].label.replace(/\n/g,' ')},
+          label:function(i){return ' '+(i.raw).toLocaleString()+' reviews  \u00b7  '+(i.dataIndex>=4?'Discovery':'Operational')}
+        }
+      }
+    },
+    scales:{
+      x:{ticks:{color:'#64748b',font:{size:11,family:'Inter'},maxRotation:0},grid:{color:'rgba(31,45,68,0.8)'}},
+      y:{ticks:{color:'#64748b',font:{size:11,family:'Inter'},callback:function(v){return v>=1000?(v/1000).toFixed(1)+'k':v}},grid:{color:'rgba(31,45,68,0.8)'},border:{dash:[3,3]}}
+    },
+    animation:{duration:900,easing:'easeOutQuart'}
+  }
+});
+</script>
+</body>
+</html>
